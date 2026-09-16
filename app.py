@@ -2,12 +2,13 @@ import mlflow
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+import os
 
 MODEL_URI = "models:/taxi-duration@champion"
 CAT_FEATURES = ["PULocationID", "DOLocationID"]
 FEATURES = ["trip_distance", "passenger_count", "hour", "weekday"] + CAT_FEATURES
 
-mlflow.set_tracking_uri("http://127.0.0.1:5001")
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://127.0.0.1:5001"))
 
 app = FastAPI(title="Taxi Duration Prediction")
 model = None
