@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model", choices=["argparse", "lgbm"], default="lgbm")
 args = parser.parse_args()
 
+
 mlflow.set_tracking_uri("http://127.0.0.1:5001")
 mlflow.set_experiment("taxi-duration")
 
@@ -42,7 +43,11 @@ with mlflow.start_run(run_name=args.model):
     else:
         model = lgb.LGBMRegressor(n_estimators=200, learning_rate=0.1)
         model.fit(X_train, y_train, categorical_feature=cat_features)
-        mlflow.lightgbm.log_model(model, name="model")
+        mlflow.lightgbm.log_model(
+            model,
+            name="model",
+            registered_model_name="taxi-duration"
+        )             
 
     rmse = root_mean_squared_error(y_val, model.predict(X_val))
     mlflow.log_param("model_type", args.model)
