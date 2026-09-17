@@ -1,0 +1,24 @@
+services:
+  mlflow:
+    build: ./mlflow
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./mlruns:/mlruns
+      - ./mlartifacts:/mlartifacts
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////mlflow.db
+      --artifacts-destination /mlartifacts
+      --allowed-hosts "*"
+      --workers 1
+
+  fastapi:
+    build: ./ml-api
+    ports:
+      - "8001:8000"
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    depends_on:
+      - mlflow
+    restart: unless-stopped  
